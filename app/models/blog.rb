@@ -5,4 +5,6 @@ class Blog < ApplicationRecord
 
 	#wont create without a title and body
 	validates_presence_of :title, :body
+
+	belongs_to :topic
 end
