@@ -9,7 +9,8 @@ class PortfoliosController < ApplicationController
 
   def new
     @portfolio_item = Portfolio.new
-    #we need to make form elements available upon creation. That's why it's going here. 
+    #we need to make form elements available upon creation. That's why it's going here. As opposed to say, 
+    #create where it wouldn't make sense. 
     #intantiates 3 versions of this portfolio item with technologies
     #I want you to create 3 types of technologies and make this available to the form
 

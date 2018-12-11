@@ -1,0 +1,57 @@
+
+
+AUTHENTICATION
+
+
+Devise install: 
+	rails generate devise:install
+
+Initializers is for setting up custom settings with devise
+locals is for different languages like spanish or mandarin 
+
+in devise.rb
+	lets you set length and stuff. 
+
+change the mailer_sender attribute
+	support@devcamp.com as an example 
+
+To setup we need to define a default URL in our environment files:
+
+       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+       Host should say your site.com when you put it in production
+
+Set root which we have already done in the routes file
+
+
+Next is to setup flash message in the application HTML layout
+
+Then we setup a generator to create the view files for devise sop we can see it. 
+	rails g devise:views in cli
+
+Registrations is like creating an account or password creation, 
+Sessions is when you are loggin into the application 
+
+
+Next we have to use devise for what ever model we want to secure. This time we created one for 
+User:
+	rails generate devise User
+
+	This updates the route table and creates a user model file --> Models: user.rb
+
+	In User.rb there are a lot of customizable functions like confirmable which means you have to 
+	receive a valid email reponse in order to create an account. This like shits on robots. 
+
+
+
+IF we wanted to add custom fields. 
+
+In the devise_create_users.rb file there is a database migration, 
+we are going to add a custom firstname and last name for better user experience. 
+
+	##Custom Fields 
+	t.string :name
+
+	Then we migrated the database: rails db:migrate
+
+IMPORTANT**** make sure to restart the server when reconfiguring the routes table. 
