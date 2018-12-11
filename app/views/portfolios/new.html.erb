@@ -15,13 +15,29 @@
 
 
 
+
   <div class="field">
     <%= form.label :body %>
     <%= form.text_area :body %>
   </div>
 
 
+<%-# here we are going to create another form for the new technologies attribute
+ #pulls from the controller page -%>
 
+
+  <ul>
+    <%-# this is a special command to create nested forms and attributes
+    #pulls from controller page 
+    #this of course only affects the new page, we will have to modify the show page -%>
+
+    <%= form.fields_for :technologies do |technology_form| %>
+    <li>
+      <%= technology_form.label :name %>
+      <%= technology_form.text_field :name %>
+    </li>
+    <% end -%>
+  </ul>
 
 
   <div class="actions">
