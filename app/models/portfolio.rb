@@ -3,6 +3,12 @@ class Portfolio < ApplicationRecord
 	#this adds the technology model to the portfolio model
 	has_many :technologies
 
+	#data validation
+	#do not accept this attribute if the attribute "name" is empty
+	#we only used the name attribute because that's all of the attrs technology has
+	accepts_nested_attributes_for 	:technologies, 
+									reject_if: lambda { |attrs| attrs['name'].blank? }
+
 	include Placeholder
 
 	validates_presence_of :title, :body, :main_image, :thumb_image
