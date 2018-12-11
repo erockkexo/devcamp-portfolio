@@ -9,9 +9,20 @@ class PortfoliosController < ApplicationController
 
   def new
     @portfolio_item = Portfolio.new
+    #we need to make form elements available upon creation. That's why it's going here. 
+    #intantiates 3 versions of this portfolio item with technologies
+    #I want you to create 3 types of technologies and make this available to the form
+
+    3.times { @portfolio_item.technologies.build }
+
   end
+# we need to make the form attributes available to the strong paramaters
+# added technologies_attributes to the strong parameters (portfolio_params)
+# Just names, if we had other attributes we would pass them in too. 
 
   def create
+
+
     @portfolio_item = Portfolio.new(portfolio_params)
 
     respond_to do |format|
@@ -47,7 +58,7 @@ class PortfoliosController < ApplicationController
 
 
     def portfolio_params
-      params.require(:portfolio).permit(:title, :subtitle, :body)
+      params.require(:portfolio).permit(:title, :subtitle, :body, technologies_attributes: [:name])
     end
 
 

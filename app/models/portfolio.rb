@@ -6,6 +6,11 @@ class Portfolio < ApplicationRecord
 	#data validation
 	#do not accept this attribute if the attribute "name" is empty
 	#we only used the name attribute because that's all of the attrs technology has
+	#when creating a record, the key value has to be technologies_attributes
+	#That tells rails hey watch out the next thing we are sending in is a number of technology attributes because 
+	#its a nested set
+	#it also has ot be an array [{}, {}, {}]
+
 	accepts_nested_attributes_for 	:technologies, 
 									reject_if: lambda { |attrs| attrs['name'].blank? }
 
