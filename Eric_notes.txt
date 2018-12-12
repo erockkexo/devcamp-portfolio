@@ -1,0 +1,101 @@
+
+
+AUTHENTICATION
+
+
+Devise install: 
+	rails generate devise:install
+
+Initializers is for setting up custom settings with devise
+locals is for different languages like spanish or mandarin 
+
+in devise.rb
+	lets you set length and stuff. 
+
+change the mailer_sender attribute
+	support@devcamp.com as an example 
+
+To setup we need to define a default URL in our environment files:
+
+       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+       Host should say your site.com when you put it in production
+
+Set root which we have already done in the routes file
+
+
+Next is to setup flash message in the application HTML layout
+
+Then we setup a generator to create the view files for devise sop we can see it. 
+	rails g devise:views in cli
+
+Registrations is like creating an account or password creation, 
+Sessions is when you are loggin into the application 
+
+
+Next we have to use devise for what ever model we want to secure. This time we created one for 
+User:
+	rails generate devise User
+
+	This updates the route table and creates a user model file --> Models: user.rb
+
+	In User.rb there are a lot of customizable functions like confirmable which means you have to 
+	receive a valid email reponse in order to create an account. This like shits on robots. 
+
+
+
+IF we wanted to add custom fields. 
+
+In the devise_create_users.rb file there is a database migration, 
+we are going to add a custom firstname and last name for better user experience. 
+
+	##Custom Fields 
+	t.string :name
+
+	Then we migrated the database: rails db:migrate
+
+IMPORTANT**** make sure to restart the server when reconfiguring the routes table. 
+
+
+Now we are going to update the routes because it doesn't look very professional right now
+
+so in routes, we can update the devise_for method to take on some customization: 
+
+	devise_for :users, path: "", path_names: { sign_in: 'login', sign_out: 'log_out', sign_up: 'register' }
+
+
+
+We still don't have the logout functionality
+
+We are just going to put a logout button on our layouts file so that later we can update that and make it easy for everyone to use 
+
+	In rake routes file we find the logout page. We see that destroy_user_session is tied to the logout function. 
+
+		destroy_user_session DELETE /
+
+	 	log_out(.:format)                                                                   
+
+	in the application.html.erb file we add: 
+	<%= link_to "Logout", destroy_user_session_path, method: :destory %>
+
+
+	This gives us the ability to logout, but it doesn't change pages or status just yet. We have to find out if a user is already logged in. 
+
+		Stilll in the application.html.erb file:
+
+		<%= link_to "Log in", new_user_session_path %> (found from rake routes login)
+		<%= link_to "Sign up", new_user_registration_path %>
+
+
+
+We want our customers to be able to have a custom name. Remember in our migration we created the t.string => "name" field, but it hasnt carried over to the form just yet. 
+
+	In views, devise, registration. 
+
+	we can just copy and paste the fields, while changing some :email to :name, and email_field to text_field :
+
+	<div class="field">
+    	<%= f.label :name %><br />
+    	<%= f.text_field :name %>
+  	</div> 
+
