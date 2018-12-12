@@ -55,3 +55,47 @@ we are going to add a custom firstname and last name for better user experience.
 	Then we migrated the database: rails db:migrate
 
 IMPORTANT**** make sure to restart the server when reconfiguring the routes table. 
+
+
+Now we are going to update the routes because it doesn't look very professional right now
+
+so in routes, we can update the devise_for method to take on some customization: 
+
+	devise_for :users, path: "", path_names: { sign_in: 'login', sign_out: 'log_out', sign_up: 'register' }
+
+
+
+We still don't have the logout functionality
+
+We are just going to put a logout button on our layouts file so that later we can update that and make it easy for everyone to use 
+
+	In rake routes file we find the logout page. We see that destroy_user_session is tied to the logout function. 
+
+		destroy_user_session DELETE /
+
+	 	log_out(.:format)                                                                   
+
+	in the application.html.erb file we add: 
+	<%= link_to "Logout", destroy_user_session_path, method: :destory %>
+
+
+	This gives us the ability to logout, but it doesn't change pages or status just yet. We have to find out if a user is already logged in. 
+
+		Stilll in the application.html.erb file:
+
+		<%= link_to "Log in", new_user_session_path %> (found from rake routes login)
+		<%= link_to "Sign up", new_user_registration_path %>
+
+
+
+We want our customers to be able to have a custom name. Remember in our migration we created the t.string => "name" field, but it hasnt carried over to the form just yet. 
+
+	In views, devise, registration. 
+
+	we can just copy and paste the fields, while changing some :email to :name, and email_field to text_field :
+
+	<div class="field">
+    	<%= f.label :name %><br />
+    	<%= f.text_field :name %>
+  	</div> 
+
