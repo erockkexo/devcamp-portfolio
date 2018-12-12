@@ -1,7 +1,10 @@
 
+---------------------------------------------------
+
 
 AUTHENTICATION
 
+---------------------------------------------------
 
 Devise install: 
 	rails generate devise:install
@@ -94,8 +97,108 @@ We want our customers to be able to have a custom name. Remember in our migratio
 
 	we can just copy and paste the fields, while changing some :email to :name, and email_field to text_field :
 
+	This is the new file
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+
+
+	And this is the edit file
 	<div class="field">
     	<%= f.label :name %><br />
     	<%= f.text_field :name %>
   	</div> 
+
+
+This lets us get the name from the custmer. But it doesnt capture the name just yet. If you remember, the controller doesn't permit the name params. 
+
+Industry best practice is called single responsibility rule - 
+A class should have a single responsibility. If you have to use the word AND to describe it it should be split up. 
+
+
+We are going to create a new concern in controllers; 
+
+Module as being modular and can be spread around 
+Classes are for single contollers. 
+
+We are going to create another module called DeviseWhiteList in the file devise_whitelist.rb
+
+We must call it DeviseWhitelist because rails has a parsing rule that turns 
+	DeviseWhitelist => devise_whitelist
+This way the application can find it 
+
+we start by instantiating it: 
+	module DeviseWhitelist
+
+	extend ActiveSupport::Concern 
+		This brings in the methods from the ACtive SUpport Concern module
+
+
+
+Now lets say we wanted to add something like "Hey Eric", if we look at our schema file we see there is no entry to collect that information.
+
+First we go to the user model => user.rb and we are going to create some new methods. These methods split the customer defined name into first name and last name. We are also going to make sure the user has to include their first and last name so that they don't miss it by accident and shit goes wrong:
+
+
+	validates_presence_of :name
+
+	def first_name
+		self.name.split.first
+	end
+
+	def last_name
+		self.name.split.last
+	end 
+
+And with this lines of code we can update the views page to call the first_name and last_name methods and display them to the world!
+
+	<%= current_user.first_name if current_user %>
+
+Now we use the if statement because first_name is a method and if there is no user signed in it will disrupt the entire procedure. 
+
+The coolest part about this whole procedure is that if we create the methods within the models our entire system can all them when ever it wants. 
+
+Devise gives us the current_user method. 
+
+Current_user method checks to see if there is a user logged in. If they are logged it, it parses a direct connection to the database under the name entry. 
+
+
+
+
+---------------------------------------------------
+
+Controllers 
+
+
+---------------------------------------------------
+
+
+
+In this section we started with looking at the Routes folder: 
+
+As a reminder:
+
+	get 'portfolio/:id', to: 'portfolio#show', as: 'portfolio_show'
+
+	This a specific route that takes in an ID paramater and is mapped to the show action 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
