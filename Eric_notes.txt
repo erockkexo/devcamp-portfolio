@@ -645,7 +645,18 @@ View Helper method
     When to use a partial vs Helper method 
 
 
+Content Helper
 
+
+	Processes that can be used by methods or helper. It's kind of nice because you can pass to it HTML tags as seen below: 
+
+
+		--> application_helper.rb 
+
+
+		def sample_helper
+			content_tag(:div, "My content", class: "my-class")
+		end
 
 
 
