@@ -238,7 +238,7 @@ By typing in the html form:
 
 
 
-Sessions 
+Sessions and Session Tracker
 
 
 	The ability to create dynamic routes for exmaple different landing pages from different places like linkedin or facebook. OR DIFFERENT ADDS PER PERSON. 
@@ -371,6 +371,135 @@ Null Object Pattern
 			end
 
 		 end
+
+
+
+---------------------------------------------------
+
+Views 
+
+
+---------------------------------------------------
+
+
+
+
+Working with the master view file 
+
+	Our first goal is to create a dynamically generator html title entry for all of our pages. 
+	A quick look at application.html.erb in the layouts file shows us that the the title tags are hard coded: 
+
+		--> application.html.erb:
+
+	    <title>Devcamp Portfolio | My Portfolio Website</title>
+
+    The first step is editing the application controller file, and we are going to add a set_title method: 
+
+    	--> application_controller.rb
+
+		before_action :set_title
+		
+		def set_title
+			@page_title = "Devcamp Portfolio | My Portfolio Website"
+		end
+
+	Then going back to the views file: 
+
+		--> application.html.erb:
+
+		 <title> <%= @page_title %> </title>
+
+	 This step gives us a default title, which can be overided by putting a method in the controller file under 
+	 any of the actions. For example: 
+
+
+		--> blogs_controller.rb:
+
+		  def index
+    		@blogs = Blog.all
+   			@page_title = "Blog"
+  		  end
+
+
+  	We can take this one step further by adding a @blog.title tage to the @page_title instance variable. 
+  	Remember because of the before_action at the top of the screen we have access to the @blog instance vairable
+  	which is set at the bottom of the page:
+
+
+		--> blogs_controller.rb:
+
+		  def show
+		    @page_title = @blog.title
+		  end
+
+	Now we are going to do our usual and set this as a concern by creating the blogs_pagetitle.rb file in the 
+	concerns folder.  
+
+		--> blogs_pagetitle.rb
+
+
+			module BlogsPagetitle
+
+				extend ActiveSupport::Concern
+
+
+				included do 
+					before_action :set_title
+				end
+
+				def set_title
+
+					@page_title =  "Devcamp Portfolio | My Portfolio Website"
+					@seo_keywords = "Eric's Portfolio"
+					
+				end		
+
+			end
+
+
+	Then we update the application_controller.rb file:
+		--> application_controller.rb 
+
+			include BlogsPagetitle #remember the name must match up
+
+	Then we can add a meta name tag on our layouts page: 
+
+		--> application.html.erb 
+
+		 <meta name="keywords" content="<%= @seo_keywords %>">
+
+
+	 Now we are going to create some more links in the html page. 
+
+
+
+		<div>
+	      <div><%= link_to "Home", root_path %></div>
+	      <div><%= link_to "About Me", about_path %></div>
+	      <div><%= link_to "Contact", contact_path %></div>
+	    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
