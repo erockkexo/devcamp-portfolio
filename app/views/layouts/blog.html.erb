@@ -21,22 +21,11 @@
 
     <% #we have to determine if the user is already logged in our not %> 
 
-    <% if current_user.is_a?(User) %>
-      <%= link_to "Logout", destroy_user_session_path, method: :delete %>
-    <% else %>
-      <%= link_to "Log in", new_user_session_path %>
-      <%= link_to "Sign up", new_user_registration_path %>
-    <% end -%>
+    <%= user_check %>
 
     <%= yield %>
 
-    <div>
-      <div><%= link_to "Home", root_path %></div>
-      <div><%= link_to "About Me", about_path %></div>
-      <div><%= link_to "Contact", contact_path %></div>
-      <div><%= link_to "Portfolio", portfolios_path %></div>
-      <div><%= link_to "Blog", blogs_path %></div>
-    </div>
+
 
 
     <% if session[:source] %>

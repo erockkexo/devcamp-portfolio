@@ -596,7 +596,53 @@ Sending data between partials
 	    	<%= render 'form', portfolio_item: @portfolio_item %>
 
 
+View Helper method 
 
+	Helper methods are like partials but instead of being html based they are ruby based. 
+	We are going to create a helper method called "sample helper"
+
+		--> application_helper.rb
+
+		module ApplicationHelper
+			def sample_helper
+				"<p>My Helper</p>".html_safe     	#note that because its ruby we must use .html_safe
+			end
+		end
+
+	Then we can call this method on any one of our views pages using embedded ruby. 
+
+		--> home.html.erb
+
+		<%= sample_helper %>
+
+	lets try to build our own helper method shall we: 
+
+	so we built a user_check method into the applicaiton_helper.rb file that works, but has one caveat: 
+
+		--> application_heler.rb 
+
+		def user_check
+
+	    if current_user.is_a?(User) 
+	    	link_to "Logout", destroy_user_session_path, method: :delete 
+	    else 
+	    	link_to "Log in", new_user_session_path
+	    	link_to "Sign up", new_user_registration_path 
+	     end 
+		end
+
+
+	But what happens is, is that Ruby will only return the Signup portion because it is the last thing
+	that is true. so we must concatanate them: 
+
+
+	    else 
+	    	( link_to "Log in", new_user_session_path ) + "<br>".html_safe +
+	    	( link_to "Sign up", new_user_registration_path )
+        end 
+
+
+    When to use a partial vs Helper method 
 
 
 
