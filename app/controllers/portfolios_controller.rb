@@ -58,9 +58,6 @@ class PortfoliosController < ApplicationController
   end
 
 
-    def portfolio_params
-      params.require(:portfolio).permit(:title, :subtitle, :body, technologies_attributes: [:name])
-    end
 
 
     def destroy
@@ -74,6 +71,17 @@ class PortfoliosController < ApplicationController
       format.html { redirect_to portfolios_path, notice: "Record was removed." }
       format.json { head :no_content }
     end
+
+
+    private 
+
+    def portfolio_params
+      params.require(:portfolio).permit(:title, 
+                                        :subtitle, 
+                                        :body, 
+                                        technologies_attributes: [:name])
+    end
+
 
     end
 

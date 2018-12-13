@@ -1,7 +1,10 @@
 
+---------------------------------------------------
+
 
 AUTHENTICATION
 
+---------------------------------------------------
 
 Devise install: 
 	rails generate devise:install
@@ -94,8 +97,301 @@ We want our customers to be able to have a custom name. Remember in our migratio
 
 	we can just copy and paste the fields, while changing some :email to :name, and email_field to text_field :
 
+	This is the new file
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+
+
+	And this is the edit file
 	<div class="field">
     	<%= f.label :name %><br />
     	<%= f.text_field :name %>
   	</div> 
+
+
+This lets us get the name from the custmer. But it doesnt capture the name just yet. If you remember, the controller doesn't permit the name params. 
+
+Industry best practice is called single responsibility rule - 
+A class should have a single responsibility. If you have to use the word AND to describe it it should be split up. 
+
+
+We are going to create a new concern in controllers; 
+
+Module as being modular and can be spread around 
+Classes are for single contollers. 
+
+We are going to create another module called DeviseWhiteList in the file devise_whitelist.rb
+
+We must call it DeviseWhitelist because rails has a parsing rule that turns 
+	DeviseWhitelist => devise_whitelist
+This way the application can find it 
+
+we start by instantiating it: 
+	module DeviseWhitelist
+
+	extend ActiveSupport::Concern 
+		This brings in the methods from the ACtive SUpport Concern module
+
+
+
+Now lets say we wanted to add something like "Hey Eric", if we look at our schema file we see there is no entry to collect that information.
+
+First we go to the user model => user.rb and we are going to create some new methods. These methods split the customer defined name into first name and last name. We are also going to make sure the user has to include their first and last name so that they don't miss it by accident and shit goes wrong:
+
+
+	validates_presence_of :name
+
+	def first_name
+		self.name.split.first
+	end
+
+	def last_name
+		self.name.split.last
+	end 
+
+And with this lines of code we can update the views page to call the first_name and last_name methods and display them to the world!
+
+	<%= current_user.first_name if current_user %>
+
+Now we use the if statement because first_name is a method and if there is no user signed in it will disrupt the entire procedure. 
+
+The coolest part about this whole procedure is that if we create the methods within the models our entire system can all them when ever it wants. 
+
+Devise gives us the current_user method. 
+
+Current_user method checks to see if there is a user logged in. If they are logged it, it parses a direct connection to the database under the name entry. 
+
+
+
+
+---------------------------------------------------
+
+Controllers 
+
+
+---------------------------------------------------
+
+
+
+In this section we started with looking at the Routes folder: 
+
+As a reminder:
+
+	get 'portfolio/:id', to: 'portfolio#show', as: 'portfolio_show'
+
+	This a specific route that takes in an ID paramater and is mapped to the show action 
+
+	because it catches this route: portfolio/:id, it knows to map it to the show action: portfolios#show
+
+
+In the show.html.erb page: 
+params is a hash data structure that allows us to keep key value pairs 
+
+By typing in the html form: 
+	<%= params.inspect %>
+
+	it renders the available data that we can use ot do some pretty nifty things. 
+
+	In this case we have the 	controller => portfolios, 
+								action => show
+								id => 4
+	
+	you can isolate the parameters by 
+		params[:id]
+
+	And by isolating the paramaters you can dynamically change the page based on the controller accessing the page. 
+
+
+	When the router got the request via the URL: 
+		portfolio/4
+
+	the server mapped it because the portfolio/:id is looking for an ID. 
+
+
+
+
+	When you type in 
+
+		localhost:3000/portfolio/4
+
+	the server queries the routes.rb file and looks for a similar pattern. It finds it in 
+
+		get 'portfolio/:id'	which is mapped to the action portfolio#show. 	
+
+	its going to grab the /4 portion and store that in a hash key value pair id => 4
+	from that point the controller takes over. By being mapped to the portfolio#show method, it
+	calls the show method and sends the id paramater to this method: 
+
+
+	def show
+		@portfolio_item = Portfolio.find(params[:id])
+	end
+
+
+	it basically says okay i have the paramater id => 4, so I am going to run a database query on the portfolio database and store those results in
+	the @portfolio_item instance variable and that all gets pushed to the views page. so when we call @portfolio_item it appears in embedded ruby for example: 
+
+	<%= @portfolio_item %>
+
+
+
+
+Sessions 
+
+
+	The ability to create dynamic routes for exmaple different landing pages from different places like linkedin or facebook. OR DIFFERENT ADDS PER PERSON. 
+
+	In Application controller - the parent controller of every system.
+
+	Here we put in a before action and set a new method: 
+
+
+		before_action :set_source
+
+		def set_source
+			session[:source] = params[:q] if params[:q]
+		end  
+
+	Note that the :q can be anything we want. IF a paramater exists. 
+
+	Now if we put a question mark ?="string" in the URL that passes along another key value pair to the parameters. 
+
+		localhost:3000/portfolio/4?q=twitter
+
+	Here we see that q = twitter and if we flip back to the Application controller we see that we used teh before_action to call the set_source method which basically takes sets the session[:source] = params[:q] which we set in the URL. And once set we can use it anywhere in the application!
+
+	Now switching to the application layout file ---> application.html.erb
+
+	**********WARNING***********
+
+	Sesion data is super easy to hack. Never put credit card information in it. 
+
+
+Refactoring the session into a Controller Concern 
+
+	For any page to be a controller it must inherit the attributes from the ApplicationController page. 
+	Creating a new page in the concerns page set_source.rb 
+
+	In the set_source.rb file:
+		
+
+		module SetSource #remember case is important here 
+
+			extend ActiveSupport::Concern
+
+			included do
+				before_action :set_source
+			end
+
+			def set_source
+				session[:source] = params[:q]
+			end
+		end
+
+
+	you will see that we just basically said include a set source method which sets the session source to the q value from the URL. 
+
+	Then in the Application_controller file we just called it by using the include method:
+
+		include SetSource
+
+
+
+Strong Parameters
+
+	In the application.rb file under config/locales. This is the root of all of our applicaiton. 
+
+
+
+Null Object Pattern
+
+
+	What happens when a guest (someone who isn't logged in) tries to access our show method. There would probabyl be an error because they aren't l
+	logged in, or we could build some work arounds (not a good practice.)
+	We will implement the Null Object Pattern to give custom behaviour based on if they are logged in or out, but this won't 
+	happen in the view (which is also bad practice.)
+	Instead this will be handled on the control side. 
+
+	On the web page we know right away theres a bug: it has as greeting but no name :(
+
+	Looking at the home.html.erb file we see examine the first line which is considered a bad practice / insecure. 
+	Current user is only available when someone is signed in. (not good.)
+		
+
+		<h1> Hey <%= current_user.first_name if current_user %> </h1>
+
+
+	Ok we start with the ApplicationController page --> application_controller.rb because it's so easy to implement. We know placement
+	isn't a problem. We start with overriding the current_user method, so that using boolean logic there is alway a current user whether it's 
+	a actual customer or a guest. :
+
+		def current_user 
+			super || 
+		end 
+
+	We need to create an account that acts like a user, but is really a guest. We use the openstructure method to create a guest user account. 
+
+		def current_user
+			super || OpenStruct.new( name:"Guest", first_name: "Guest", last_name: "X", email: "guest@example.com" )
+		end
+
+	But now what we must do is we have to update the application.html.erb views/layout file becuase we started to remove the defensive code. 
+	So first we remove the if current_user %> code from the home.html.erb file: 
+
+		<h1> Hey <%= current_user.first_name %> </h1>
+
+	Then we update the application.html.erb file to reflect the options between a super (user) and a OpenSruct user:
+
+		<% if current_user.is_a?(User) %>
+	      <%= link_to "Logout", destroy_user_session_path, method: :delete %>
+	    <% else %>
+	      <%= link_to "Log in", new_user_session_path %>
+	      <%= link_to "Sign up", new_user_registration_path %>
+	    <% end -%>
+
+
+    And finally we are going to create a new concern. current_user_concern.rb
+
+		 module CurrentUserConcern
+
+			extend ActiveSupport::Concern
+
+
+			def current_user
+				super || guest_user
+			end
+
+			def guest_user
+				OpenStruct.new(	name: "Guest", 
+								first_name: "Guest", 
+								last_name: "X", 
+								email: "guest@example.com")
+			end
+
+		 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
