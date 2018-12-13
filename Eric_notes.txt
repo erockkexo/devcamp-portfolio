@@ -480,6 +480,35 @@ Working with the master view file
 	    </div>
 
 
+Creating new layout files for seperate pages
+	
+	Layouts is where we are allowed to put as many layout files as we want. Lets start with creating a HTML layout. 
+
+		--> blog.html.erb
+
+	You will notice there is a styleshgeet link tag that maps from this html page to the css page in style sheets under 
+	the assets folder:
+
+		--> application.html.erb
+
+	    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+
+    Then in the application.css file we delete everything so that there are no styling conflicts. 
+    We also added some styling in the blogs.scss folder. 
+
+    Next step is to declare what layout we want to use and we do that in the controller file. 
+
+    	--> blogs_controller.rb 
+
+    	layout "blog"         #note that this entry must match the name of the layout file created earlier. 
+
+	Finally we must precompile the code by adding it to the assets.rb file:
+
+		--> assets.rb 
+		Rails.application.config.assets.precompile += %w( blogs.css )
+		
+
+
 
 
 
