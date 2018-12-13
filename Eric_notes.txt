@@ -712,7 +712,9 @@ Rendering collections via Partials
 
 
 
+Contact Page <----- 
 
+		<p><%= number_to_phone "5555555555"%> </p>
 
 
 
