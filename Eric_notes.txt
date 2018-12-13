@@ -659,6 +659,56 @@ Content Helper
 		end
 
 
+	which you can then pass to the views page, effectively pulling some Ruby off of the views page. 
+
+	Now we are going to create an actually helper by changing our session source helper method. 
+
+		--> application.html.erb
+
+		Removed: 
+		    <% if session[:source] %>
+		    <h1>Thanks for visiting me from <%= session[:source] %></h1>
+		    <% end -%>
+
+
+
+Rendering collections via Partials 
+
+	in the portfolio page, we removed the links and refactored them to a partial page: 
+
+		--> _portfolio_item.html.erb
+
+			<p><%= link_to portfolio_items.title, portfolio_show_path(portfolio_items) %></p>
+			<p><%= portfolio_items.subtitle %></p>
+			<p><%= portfolio_items.body %></p>
+
+			<%= image_tag portfolio_items.thumb_image if !portfolio_items.thumb_image.nil? %>
+
+			<%= link_to "Edit Post", edit_portfolio_path(portfolio_items) %>
+
+			<%= link_to "Delete Post", portfolio_path(portfolio_items), method: :delete, data: {confirm: 'Are you sure man?' } %> 
+
+		--> index.html.erb - portfolios
+
+
+			<%= link_to "Create New Portfolio", new_portfolio_path %>
+
+			<% render @portfolio_items.each %>
+
+			<% end %>
+
+
+	the problem is this won't work properly because the portfolio_items doesnt match with the title 
+	It actually looks for the actual model controller name, and portfolio_items is obviously not portfolio.
+	For example, the render @blogs worked because it matched with the model controller value... @blogs. 
+
+			--> index.html.erb
+			
+			<%= render partial: 'portfolio_item', collection: @portfolio_items %>
+
+	And what this line is saying is we manually declared that this is a partial, and we are passing in the exact name
+	of the partial -> portfolio_item ==> _portfolio_item.html.erb 
+	And by the way, this partial and this render type is of the collection @portfolio_items 
 
 
 
