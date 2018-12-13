@@ -506,10 +506,94 @@ Creating new layout files for seperate pages
 
 		--> assets.rb 
 		Rails.application.config.assets.precompile += %w( blogs.css )
+
+
+Partials
+	
+	Partials are snippets of code that often get repeated across a website. 
+	Jordan's preferred method is to create a shared folder in the views folder and put his partials there.
+
+	*** Partials must be named with an underscore as the first character: 
+		--> _navbar.html.erb
+
+	    <div>
+	      <div><%= link_to "Home", root_path %></div>
+	      <div><%= link_to "About Me", about_path %></div>
+	      <div><%= link_to "Contact", contact_path %></div>
+	      <div><%= link_to "Portfolio", portfolios_path %></div>
+	      <div><%= link_to "Blog", blogs_path %></div>
+	    </div>
+
+    Now we can replace to the nav content in the application html file. 
+
+    	--> application.html.erb
+
+    	<%= render 'shared/navbar' %>
+
+
+Sending data between partials 
+
+	Looking at the _form.html page, we see that blog isn't an instance variable so its not being called from the controller.
+
+	Instead what happens is the controller sets the instance variable of @blog = Blog.new which then gets passed to the 
+	_form.html.erb file:
+
+		--> blogs_controller.html.erb
+
+			  def new
+			    @blog = Blog.new
+			  end
+
+		--> new.html.erb
+	     		<%= render 'form', blog: @blog %>.  #notice the blog: @blog 
+
+ 		--> _form.html.erb 
+
+			  <% if blog.errors.any? %>		#notice the blog.errors.any, the blog variable was passed by the new page. 
+
+
+
+    Now lets say we want to style different components of the navbar differently on each page i.e. active page. 
+    We can do this by making our sharable file dynamic. In our _nav.html.erb file: 
+
+    	--> _nav.html.erb 
+
+    	<div class= " <%= location %> " >
+
+	The location is a local variable that we can pass in from thhe views pages as an example: 
+
+		--> blog.html.erb
+
+	    <%= render 'shared/nav', location: 'top' %> #notice the location variable
+
+    So now we can refactor our shit. In the portfolios directory: 
+
+    	--> new.html.erb
+
+    		<h1>Create a new post</h1>
+
+
+			<%= render 'form', portfolio_item: @portfolio_item %>
+
+
+	And we then create another file called _form.html.erb (which is in the portfolios directory still)
 		
+		--> _form.html.erb
 
 
 
+			<%= form_for(@portfolio_item) do |form| %>
+
+			  <div class="field">
+			    <%= form.label :title %>
+			    <%= form.text_field :title %>
+			  </div>
+
+	    --> new.html.erb     and      edit.html.erb
+
+
+	
+	    	<%= render 'form', portfolio_item: @portfolio_item %>
 
 
 
