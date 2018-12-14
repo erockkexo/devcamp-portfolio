@@ -718,6 +718,50 @@ Contact Page <-----
 
 
 
+Everything we need to do to get Views working
+
+	1. Create a controller page. Remember, :
+
+		--> guide_controller.rb
+
+		class GuidesController < ApplicationController
+
+		end
+
+
+	2. Now we have to create actions in this case it's called guide; 
+
+
+		--> guide_controller.rb
+
+		class GuidesController < ApplicationController
+			def book
+			end
+		end	
+
+
+
+	3. Now we must create a directory in the views directory. Becaue we named our class GuidesController, 
+	the directory we create must also be called guides. Now in that directory we have to create a file called 
+	book.html.erb because the action we created is def book. 
+
+
+		In this case: 
+
+			Views folder
+				guides folder            # A directory mapped to the GuidesController title 
+					book.html.erb			# A view mapped to the action name (in this case book)
+
+
+	4. Lastly we must create a route in the routes table: 
+
+		get 'guides/book'
+
+
+
+
+
+
 
 
 
