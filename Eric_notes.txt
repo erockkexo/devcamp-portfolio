@@ -772,7 +772,60 @@ Views
 
 Bootstrap 
 
+	We installed the bootsrap gem 
 
+		gem 'bootstrap', '~> 4.1.3'
+
+	Then ran the installer 
+
+		$ -> bundle install
+
+	THen we need to import the styles; 
+
+		--> stylesheets/application.scss , blogs.scss, pages.scss, portfolio.scss
+
+		@import "bootstrap";
+
+	Not in the tutorial:
+	We had to add the jquery-rails gem because our version didnt ship with jquery. I then added it to the 
+	application.js file"
+
+		--> assets/javascript/application.js
+
+		//
+		//= require jquery3
+		//= require popper
+		//= require bootstrap-sprockets
+		//	
+
+
+Building our Gems
+
+	We start by building a module in the application controller file:
+
+		--> application_controller.rb 
+
+		before_action :set_copyright
+
+		def set_copyright
+			@copyright = DevcampViewTool::Rendere.copyright "Eric Acri", "All Rights Reserved."
+		end
+
+
+		module DevcampViewTool
+			class Renderer
+				def self.copyright name, msg
+					"&copy #{Time.now.year} | <b> #{name} </b> #{msg}".html
+				end
+			end
+		end
+
+
+	We can now see if it works on our applicaiton html page; 
+
+		--> layouts/application.html.erb
+
+			<%= @copyright %>
 
 
 
