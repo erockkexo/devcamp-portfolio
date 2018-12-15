@@ -386,7 +386,7 @@ Views
 
 Working with the master view file 
 
-	Our first goal is to create a dynamically generator html title entry for all of our pages. 
+	Our first goal is to create a dynamically generate an html title entry for all of our pages. 
 	A quick look at application.html.erb in the layouts file shows us that the the title tags are hard coded: 
 
 		--> application.html.erb:
@@ -421,7 +421,7 @@ Working with the master view file
   		  end
 
 
-  	We can take this one step further by adding a @blog.title tage to the @page_title instance variable. 
+  	We can take this one step further by adding a @blog.title tag to the @page_title instance variable. 
   	Remember because of the before_action at the top of the screen we have access to the @blog instance vairable
   	which is set at the bottom of the page:
 
@@ -756,6 +756,39 @@ Everything we need to do to get Views working
 	4. Lastly we must create a route in the routes table: 
 
 		get 'guides/book'
+
+
+
+
+
+---------------------------------------------------
+
+Views 
+
+
+---------------------------------------------------
+
+
+
+Bootstrap 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
