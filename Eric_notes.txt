@@ -836,11 +836,120 @@ Authorization
 
 ---------------------------------------------------
 
+Petergate
+
+	We first start by installing Petergate: 
+
+		--> console 
+
+		rails g petergate:install 
+
+	These commands create an update to the users model and it creates a db migration.  
+
+		--> Users.rb 
+		--> db migration 
+			Adds roles to users in the database
+
+
+	And then we of course have to run a migration pattern:
+
+		--> console 
+
+		$ rails db:migrate
+
+
+
+Configuring Petergate
+
+	Remember in our Null Object Pattern, we  made a guest_user out of a OpenStruct abstraction. But that doesnt play very well with 
+	Petergate. So we are going to create a new Null Object Pattern. 
+
+		--> current_user_concern.rb
+
+			Remove the OpenStruct pattern
+
+	Creating a new file in the models directory. 
+
+		--> guest_user.rb
+
+			class GuestUser < User
+				attr_accessor :name, :first_name, :last_name, :email
+			end
+
+	And now we can create a new user in the current_user_conern folder: 
+
+		--> current_user_concern.rb 
+
+			def guest_user
+				guest = GuestUser.new                   # Remember, GuestUser = guest_user.rb (remmber the cases)
+				guest.name = "Guest User"
+				guest.first_name = "Guest"
+				guest.last_name = "User"
+				guest.email = "guest@example.com"
+				guest
+			end		
+
+	So now our guest user is actually a class that inherits from User, and this creates a few problems wiht our application helper file. 
+	Because our new "guestuser" identity inherits from user, it means that we will always have a log out action, even if the user never signs in. 
+
+	So all we have to do is replace the User with GuestUser, and then switch the order of logic: 
+
+		--> application_helper.rb
+
+
+			def user_check
+
+			    if current_user.is_a?(GuestUser) 
+			        ( link_to "Log in", new_user_session_path ) + "<br>".html_safe +
+			        ( link_to "Sign up", new_user_registration_path )
+			    else 
+			        link_to "Logout", destroy_user_session_path, method: :delete 
+
+			     end 
+			end
+
+	And finally we can update a user's permission in the blog controller and the user model file:
+
+		--> models/user.rb
+				we created a site admin role: 
+				  petergate(roles: [:site_admin], multiple: false)                              
+
+
+
+		--> blogs_controller.rb
+
+			  access all: [:show, :index], user: {except: [:destroy, :new, :create, :update, :edit]}, site_admnin: :all 
+
+			  What this says is that every user can show and index, a logged in user can do everything except
+			  destroy, create, update or edit a blog post. And a site_admin (me) can do everything. 
 
 
 
 
+	But this isn't complete yet, because all users still can view the actions and gives for bad user experience. 
+	So what we can do is add some logic to the code so that it dynamically knows what a user can and can not
+	do. We add some logic if logged_in?(:site_admin) %>
 
+		--> index.html.erb 
+
+
+			<%= link_to 'New Blog', new_blog_path if logged_in?(:site_admin)  %>
+												  --------------------------
+
+    And of course we can update our partials too
+
+    	--> _blog.html.erb
+
+
+	        <td><%= link_to 'Edit', edit_blog_path(blog) if logged_in?(:site_admin) %></td>
+		    <td><%= link_to 'Destroy', blog, method: :delete, data: { confirm: 'Are you sure?' } if logged_in?(:site_admin) %></
+
+
+    And finally we update our portfolio controller too. 
+
+    	--> portfolio_controller.rb 
+
+			access all: [:show, :index, :angular], user: {except: [:destroy, :new, :create, :update, :edit]}, site_admnin: :all 
 
 
 
