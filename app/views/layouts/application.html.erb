@@ -18,19 +18,26 @@
   </head>
 
   <body>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
 
-    <%= render 'shared/nav', location: "top" %>
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner"></div>
+        <div class="cover-container"></div>
 
-    <% #we have to determine if the user is already logged in our not %> 
+              <%= render 'shared/application_nav' %>
 
-    <%= user_check %>
+              <% #we have to determine if the user is already logged in our not %> 
 
-    <%= yield %>
+              <%= user_check %>
 
-    <%= @copyright %>
+              <%= yield %>
 
-    <%= source_helper %>
+              <%= @copyright %>
+
+              <%= source_helper %>
+
+        </div>
+      </div>
+    </div>          
+
   </body>
 </html>
